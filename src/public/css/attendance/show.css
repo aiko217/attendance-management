@@ -1,0 +1,134 @@
+body {
+    background-color: #f1efef;
+}
+
+.error-messages {
+    height: 20px;
+    color: #ff0000;
+    text-align: left;
+}
+
+.attendance-detail h2 {
+    display: inline-block;
+    border-left: 5px solid #000000;
+    text-align: left;
+    font-size: 30px;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+.attendance-detail .attendance-table {
+    margin: 20px auto 0 auto;
+}
+
+.attendance-detail {
+    width: 900px;
+    margin: 0 auto;
+}
+.attendance-table {
+    width: 900px;
+    height: 555px;
+    margin: 20px auto;
+    text-align: left;
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+.attendance-table tr {
+    border-bottom: 2px solid #E1E1E1
+}
+
+.attendance-table th {
+    padding: 10px;
+    text-align: left;
+    padding-left: 50px;
+    color: #737373;
+}
+
+.name {
+    font-size: 16px;
+    font-weight: bold;
+}
+.year {
+    margin-right: 50px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.date {
+    margin-left: 50px; 
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.clock_in,
+.break_start,
+.break2_start {
+    margin-right: 50px;
+    width: 103px;
+    height: 28px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.clock_out,
+.break_end,
+.break2_end {
+    margin-left: 50px;
+    width: 103px;
+    height: 28px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 4px;
+    border: 1px solid #E1E1E1
+}
+
+.attendance-table td {
+    padding: 10px;
+    text-align: left;
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+input[type="time"]::-moz-calendar-picker-indicator {
+    display: none;
+}
+
+.clock_in,
+.clock_out,
+.break_start,
+.break_end,
+.break2_start,
+.break2_end {
+    padding-right: 0.5em;
+}
+
+.btn-area {
+    width: 900px;
+    text-align: right;
+    margin: 10px auto ;
+}
+.pending-message {
+    color: #ff0000;
+    font-size: 18px;
+}
+
+.update {
+    width: 130px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s;
+    background-color: #000000;
+    color: #fff;
+}
+

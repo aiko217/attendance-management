@@ -1,0 +1,110 @@
+body {
+    background-color: #efefef;
+}
+
+.attendance-list {
+    max-width: 900px;
+    margin: 60px auto;
+    background-color: #efefef;
+    padding: 30px 40px;
+    border-radius: 10px;
+}
+
+.attendance-list h2 {
+    font-size: 22px;
+    margin-bottom: 25px;
+    border-left: 5px solid #000000;
+    padding-left: 10px;
+}
+
+.month-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    margin-bottom: 25px;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    padding: 0 20px;
+}
+
+.month-left,
+.month-center,
+.month-right {
+    display: flex;
+    align-items: center;
+}
+
+.month-center {
+    justify-content: center;
+    gap: 8px;
+}
+
+.calendar-logo {
+    width: 24px;
+    height: 24px;
+}
+
+.arrow-logo {
+    width: 20px;
+    height: 20px;
+    color: #737373;
+}
+
+.flip {
+    transform: scaleX(-1);
+}
+
+.month-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    color: #737373;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.current-month {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.attendance-table th,
+.attendance-table td {
+    text-align: center;
+    padding: 12px;
+    border-bottom: 2px solid #E1E1E1;
+    font-size: 14px;
+    background: white;
+}
+
+.attendance-table th {
+    background-color: #FFFFFF;
+    font-weight: bold;
+}
+
+.attendance-table tr:last-child td {
+    border-bottom: none;
+}
+
+.detail-btn {
+    color: #000000;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.detail:hover {
+    text-decoration: underline;
+}

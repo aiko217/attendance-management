@@ -20,9 +20,14 @@ class Attendance extends Model
         'remarks',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function breaks()
     {
-        return $this->hasMany(BreakTime::class);
+        return $this->hasMany(BreakTime::class, 'attendance_id');
     }
 
     public function attendanceRequests()
