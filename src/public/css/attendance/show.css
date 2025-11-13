@@ -2,10 +2,10 @@ body {
     background-color: #f1efef;
 }
 
-.error-messages {
-    height: 20px;
-    color: #ff0000;
-    text-align: left;
+.input-error {
+    color: red;
+    font-size: 14px;
+    margin-top: 2px;
 }
 
 .attendance-detail h2 {
@@ -74,6 +74,18 @@ body {
     border: 1px solid #ddd;
 }
 
+.clock_in--span,
+.break_start--span,
+.break2_start--span {
+    border: none;
+    margin-right: 50px;
+    width: 103px;
+    height: 28px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+
 .clock_out,
 .break_end,
 .break2_end {
@@ -85,6 +97,18 @@ body {
     text-align: center;
     border-radius: 4px;
     border: 1px solid #E1E1E1
+}
+
+.clock_out--span,
+.break_end--span,
+.break2_end--span {
+    border: none;
+    margin-left: 50px;
+    width: 103px;
+    height: 28px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
 }
 
 .attendance-table td {

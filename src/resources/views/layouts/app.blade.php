@@ -23,7 +23,7 @@
             <a class="list__button-submit" href="/attendance/list">勤怠一覧</a>
             </li>
             <li>
-            <a class="request__button-submit" href="/attendance/request">申請</a>
+            <a class="request__button-submit" href="{{ route('stamp_correction_request.list') }}">申請</a>
             </li>
             <li>
             <form action="/logout" class="header__form" method="post">

@@ -175,10 +175,10 @@ class AttendanceController extends Controller
             'approval_status' => '承認待ち',
             'request_date'    => now()->toDateString(),
             'new_date'        => $attendance->date,
-            'new_clock_in'    => $formatTime($newClockIn),
-            'new_clock_out'   => $formatTime($newClockOut),
-            'new_break_in'    => $formatTime($newBreakIn),
-            'new_break_out'   => $formatTime($newBreakOut),
+            'new_clock_in'    => $formatTime($validated['clock_in'] ?? null),
+            'new_clock_out'   => $formatTime($validated['clock_out'] ?? null),
+            'new_break_in'    => $formatTime($validated['break_start'] ?? null),
+            'new_break_out'   => $formatTime($validated['break_end'] ?? null),
             'remarks'         => $validated['remarks'] ?? '',
         ]);
     
