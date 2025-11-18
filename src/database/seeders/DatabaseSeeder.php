@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\User;
 use App\Models\Attendance;
 
 class DatabaseSeeder extends Seeder
@@ -14,15 +15,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        foreach ([1, 2, 3] as $userId) {
+        $users = User::factory()->count(10)->create();
+
+        foreach ($users as $user) {
             Attendance::factory()
             ->count(60)
-            ->state(['user_id' => $userId])
+            ->state(['user_id' => $user->id])
             ->make()
-            ->each(function ($attendance) use ($userId) {
+            ->each(function ($attendance) use ($user) {
                 $record = Attendance::updateOrCreate(
                     [
-                        'user_id' => $userId,
+                        'user_id' => $user->id,
                         'date' => $attendance->date,
                     ],
                     [
@@ -40,5 +43,8 @@ class DatabaseSeeder extends Seeder
                 );
             });
         }
+        $this->call([
+            AdminUserSeeder::class,
+        ]);
     }
 }

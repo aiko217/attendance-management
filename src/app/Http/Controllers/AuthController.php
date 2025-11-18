@@ -30,7 +30,7 @@ class AuthController extends Controller
                     //'email' => 'メール認証を完了してください。',
                // ]);
             //}
-        return redirect()->intended('/attendance')->with('flashSuccess', 'ログインしました');
+        return redirect()->route('attendance.index');
         }
 
         return back()->withErrors([
@@ -59,7 +59,7 @@ class AuthController extends Controller
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login');
+        return redirect()->route('login.form');
     }
 }
 

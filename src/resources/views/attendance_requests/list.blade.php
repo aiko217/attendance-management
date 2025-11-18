@@ -32,9 +32,9 @@
             <tr>
                 <td>{{ $request->approval_status }}</td>
                 <td>{{ $request->user->name ?? '' }}</td>
-                <td>{{ \Carbon\Carbon::parse($request->new_date)->format('Y年m月d日') }}</td>
+                <td>{{ \Carbon\Carbon::parse($request->new_date)->format('Y/m/d') }}</td>
                 <td>{{ $request->remarks ?? '' }}</td>
-                <td>{{ \Carbon\Carbon::parse($request->request_date)->format('Y年m月d日') }}</td>
+                <td>{{ \Carbon\Carbon::parse($request->request_date)->format('Y/m/d') }}</td>
                 <td>
                     <a href="{{ route('attendance.show', $request->attendance_id) }}" class="detail_btn">詳細</a>
                 </td>

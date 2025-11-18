@@ -54,7 +54,8 @@ class ShowRequest extends FormRequest
             }
 
             $breaks = [
-                ['start' => $this->break_start, 'end' => $this->break_end, 'start_name' => 'break_start', 'end_name' => 'break_end'],
+                ['start' => $this->break_start, 'end' => $this->break_end, 'start_name' => 'break_start', 
+                'end_name' => 'break_end'],
                 ['start' => $this->break2_start, 'end' => $this->break2_end, 'start_name' => 'break2_start', 'end_name' => 'break2_end'],
             ];
 
@@ -74,7 +75,7 @@ class ShowRequest extends FormRequest
                     if ($clock_out && $breakEnd > $clock_out) {
                         $validator->errors()->add
                         ($break['end_name'], '休憩時間もしくは退勤時間が不適切な値です');
-                        //('break' . ($i + 1) . '_end', '休憩時間もしくは退勤時間が不適切な値です');
+                        
                     }
                 }
             }

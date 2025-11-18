@@ -30,7 +30,10 @@ php artisan key:generate
 php artisan migrate
 ```
 
-
+7. シーディングの実行
+``` bash
+php artisan db:seed
+```
 
 ## 使用技術(実行環境)
 - PHP8.1.33
@@ -44,3 +47,8 @@ php artisan migrate
 ## ER 図
 
 ![ER図](attendance_management.png)
+
+## テストアカウント
+name: 管理者ユーザ  
+email: admin@example.com  
+password: password123

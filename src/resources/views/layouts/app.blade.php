@@ -26,7 +26,7 @@
             <a class="request__button-submit" href="{{ route('stamp_correction_request.list') }}">申請</a>
             </li>
             <li>
-            <form action="/logout" class="header__form" method="post">
+            <form action="{{ route('logout') }}" class="header__form" method="post">
             @csrf
             <button type="submit" class="logout__button-submit">ログアウト</button>
             </form>
