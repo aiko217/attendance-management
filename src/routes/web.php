@@ -6,6 +6,9 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceRequestController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
+use App\Http\Controllers\Admin\AttendanceRequestController as AdminAttendanceRequestController;
+use App\Http\Controllers\Admin\StaffController
+as AdminStaffController;
 use 
 Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -54,6 +57,12 @@ Route::middleware('auth:admin')->group(function () {
     Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.index');
     Route::get('/admin/attendance/{id}', [AdminAttendanceController::class, 'show'])->name('admin.show');
     Route::put('/admin/attendance/detail/{id}', [AdminAttendanceController::class, 'update'])->name('admin.update');
+    Route::get('/admin/staff/list', [AdminStaffController::class, 'staffList'])->name('admin.staff.list');
+    Route::get('/admin/attendance/staff/{user_id}', [AdminAttendanceController::class, 'staffAttendance'])->name('admin.staff.attendance_list');
+    Route::get('/admin/attendance/staff/{user_id}/csv', [AdminAttendanceController::class, 'exportCsv'])->name('admin.staff.attendance_csv');
+    Route::get('/admin/stamp_correction_request/list', [AdminAttendanceRequestController::class, 'index'])->name('admin.stamp_correction_request.list');
+    Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}',
+    [AdminAttendanceRequestController::class, 'approve'])->name('admin.stamp_correction_request.approve');
 });    
 
 

@@ -1,0 +1,91 @@
+@media (min-width: 1400px) and (max-width: 1540px) {
+    body {
+        background-color: #f1efef;
+    }
+
+    .border {
+        border-bottom: 1px solid #000000;
+        margin-bottom: 20px;
+    }
+
+    .border__list {
+        list-style: none;
+        display: flex;
+        justify-content: flex-start;
+        padding: 0;
+        margin: 0;
+    }
+
+    .border__list li {
+        margin-right: 30px;
+
+    }
+
+    .tab {
+        display: inline-block;
+        padding: 10px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        color: #000000;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    .attendance-requests {
+        max-width: 900px;
+        margin: 60px auto;
+        background-color: #efefef;
+        padding: 30px 40px;
+        border-radius: 10px;
+    }
+
+    .attendance-requests h2 {
+        display: inline-block;
+        border-left: 8px solid #000000;
+        text-align: left;
+        font-size: 30px;
+        font-weight: bold;
+        padding-left: 10px;
+    }
+
+    .request-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .request-table th,
+    .request-table td {
+        text-align: center;
+        padding: 12px;
+        border-bottom: 2px solid #E1E1E1;
+        font-size: 16px;
+        font-weight: bold;
+        color: #737373;
+        background: white;
+    }
+
+    .request-table th {
+        background-color: #FFFFFF;
+        font-weight: bold;
+        color: #737373;
+    }
+
+    .request-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .detail_btn {
+        color: #000000;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .detail:hover {
+        text-decoration: underline;
+    }   
+}

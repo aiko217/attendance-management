@@ -19,7 +19,7 @@ use Carbon\Carbon;
         </div>
         <div class="month-center">
         <img src="{{ asset('images/calendar.png') }}" alt="アプリロゴ" class="calendar-logo" />
-        <p class="current-month">{{ $year }}年{{ $month }}月</p>
+        <p class="current-month">{{ $year }}/{{ $month }}</p>
         </div>
         <div class="month-right">
         <a href="{{ route('attendance.list', ['year' => Carbon::create($year, $month)->addMonth()->year, 'month' => Carbon::create($year, $month)->addMonth()->month]) }}" class="month-btn next">翌月

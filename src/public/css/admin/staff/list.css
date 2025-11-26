@@ -1,0 +1,61 @@
+
+@media (min-width: 1400px) and (max-width: 1540px) {
+    body {
+        background-color: #f1efef;
+    }
+    
+    .staff-list {
+        max-width: 900px;
+        margin: 60px auto;
+        padding: 0 40px;
+    }
+
+    .staff-list h2 {
+        display: inline-block;
+        border-left: 8px solid #000000;
+        text-align: left;
+        font-size: 30px;
+        font-weight: bold;
+        padding-left: 10px;
+        margin-bottom: 50px;
+    }
+
+    .staff-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .staff-table th,
+    .staff-table td {
+        text-align: center;
+        padding: 12px;
+        border-bottom: 2px solid #E1E1E1;
+        font-size: 16px;
+        font-weight: bold;
+        color: #737373;
+        background: white;
+    }
+
+    .staff-table th {
+        background-color: #FFFFFF;
+        font-weight: bold;
+    }
+
+    .staff-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .detail_btn {
+        color: #000000;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .detail:hover {
+        text-decoration: underline;
+    }   
+}

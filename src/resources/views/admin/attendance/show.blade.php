@@ -18,6 +18,7 @@ $break2Out = $attendance->breaks[1]->break_end ?? null;
 <div class="attendance-detail">
     <h2>勤怠詳細</h2>
 
+    
 @if (session('success'))
 <div class="success-message">
     {{ session('success') }}

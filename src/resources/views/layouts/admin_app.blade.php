@@ -23,7 +23,7 @@
             <a class="list__button-submit" href="/admin/staff/list">スタッフ一覧</a>
             </li>
             <li>
-            <a class="request__button-submit" href="{{ route('stamp_correction_request.list') }}">申請一覧</a>
+            <a class="request__button-submit" href="{{ route('admin.stamp_correction_request.list') }}">申請一覧</a>
             </li>
             <li>
             <form action="{{ route('admin.logout') }}" class="header__form" method="post">
