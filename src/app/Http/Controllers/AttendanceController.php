@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\BreakTime;
 use App\Models\AttendanceRequest;
+use App\Models\NewBreak;
 use Illuminate\Http\Request;
 use App\Http\Requests\ShowRequest;
 use Illuminate\Support\Facades\Auth;
@@ -138,49 +139,107 @@ class AttendanceController extends Controller
         $user = Auth::user();
 
         $attendance = Attendance::where('user_id', $user->id)
-        ->with(['user', 'breaks', 'attendanceRequests'])
+        ->with(['user', 'breaks', 'attendanceRequests.newBreaks'])
         ->where('id', $id)
         ->firstOrFail();
 
-        $hasPending = $attendance->attendanceRequests
+        $pendingRequest= $attendance->attendanceRequests
+        ->where('approval_status', '承認待ち')->sortByDesc('request_date')
+        ->first();
+
+        $approvedRequest = $attendance->attendanceRequests
+        ->where('approval_status', '承認済み')->sortByDesc('request_date')
+        ->first();
+
+        $source = $pendingRequest ?? $approvedRequest;
+
+        if ($source) {
+
+            $referClockIn = $source->new_clock_in;
+            $referClockOut = $source->new_clock_out;
+            $referBreaks = $source->newBreaks;
+            $referRemarks = $source->remarks;
+        } else {
+            $referClockIn = $attendance->clock_in;
+            $referClockOut = $attendance->clock_out;
+            $referBreaks = $attendance->breaks;
+            $referRemarks = $attendance->remarks;
+        }
+
+        $date = \Carbon\Carbon::parse($attendance->date);
+        $year = $date->year;
+
+        /*$referClockIn  = $pendingRequest->new_clock_in ?? $approvedRequest->new_clock_in ?? $attendance->clock_in;
+        $referClockOut = $pendingRequest->new_clock_out ?? $approvedRequest->new_clock_out ?? $attendance->clock_out;
+        $referRemarks  = $pendingRequest->remarks ?? $approvedRequest->remarks ?? $attendance->remarks;
+        $referBreaks   = $pendingRequest->newBreaks ?? $approvedRequest->newBreaks ?? $attendance->breaks;*/
+
+        return view('attendance.show', [
+            'attendance' =>$attendance,
+            'pendingRequest' => $pendingRequest,
+            'approvedRequest' => $approvedRequest,
+            'hasPending' => !is_null($pendingRequest),
+            'isApproved' => !is_null($approvedRequest),
+            'date' => $date,
+            'year' => $year,
+            'referClockIn' => $referClockIn,
+            'referClockOut' => $referClockOut,
+            'referRemarks' => $referRemarks,
+            'referBreaks' => $referBreaks,
+        ]);
+        /*$hasPending = $attendance->attendanceRequests
         ->where('approval_status', '承認待ち')
+        ->isNotEmpty();
+
+        $isApproved = $attendance->attendanceRequests
+        ->where('approval_status', '承認済み')
         ->isNotEmpty();
 
         $date = \Carbon\Carbon::parse($attendance->date);
         $year = $date->year;
         $month = $date->month;
 
-        return view('attendance.show', compact('attendance', 'year', 'month', 'date', 'hasPending'));
+        return view('attendance.show', compact('attendance', 'year', 'month', 'date', 'hasPending', 'isApproved'));*/
     }
 
     public function update(ShowRequest $request, $id)
     {
-        $attendance = Attendance::with('breaks', 'attendanceRequests')->findOrFail($id);
+        //$attendance = Attendance::with('breaks', 'attendanceRequests')->findOrFail($id);
 
+        $attendance = Attendance::with('breaks')->findOrFail($id);
         $validated = $request->validated();
         $user = Auth::user();
     
-        $firstBreak = $attendance->breaks->first();
+        /*$firstBreak = $attendance->breaks->first();
     
         $newClockIn  = $validated['clock_in'] ?? $attendance->clock_in;
         $newClockOut = $validated['clock_out'] ?? $attendance->clock_out;
         $newBreakIn  = $firstBreak ? $firstBreak->break_start : null;
-        $newBreakOut = $firstBreak ? $firstBreak->break_end : null;
+        $newBreakOut = $firstBreak ? $firstBreak->break_end : null;*/
     
         $formatTime = fn($time) => $time ? Carbon::parse($time)->format('H:i:s') : null;
     
-        AttendanceRequest::create([
-            'attendance_id'   => $attendance->id,
-            'user_id'         => $user->id,
+        $attendanceRequest = AttendanceRequest::create([
+            'attendance_id' => $attendance->id,
+            'user_id' => $user->id,
             'approval_status' => '承認待ち',
-            'request_date'    => now()->toDateString(),
-            'new_date'        => $attendance->date,
-            'new_clock_in'    => $formatTime($validated['clock_in'] ?? null),
-            'new_clock_out'   => $formatTime($validated['clock_out'] ?? null),
-            'new_break_in'    => $formatTime($validated['break_start'] ?? null),
-            'new_break_out'   => $formatTime($validated['break_end'] ?? null),
-            'remarks'         => $validated['remarks'] ?? '',
+            'request_date' => now()->toDateString(),
+            'new_date' => $attendance->date,
+            'new_clock_in' => $formatTime($validated['clock_in']),
+            'new_clock_out' => $formatTime($validated['clock_out']),
+            'remarks' => $validated['remarks'] ?? '',
         ]);
+
+        if ($request->has('new_breaks')) {
+        foreach ($request->new_breaks as $breakData) {
+            if (!empty($breakData['in']) && !empty($breakData['out'])) {
+                $attendanceRequest->newBreaks()->create([
+                    'new_break_in' => $breakData['in'],
+                    'new_break_out' => $breakData['out'],
+                ]);
+            }
+        }
+    }
     
         return redirect()->route('attendance.show', $attendance->id)
         ->withInput();

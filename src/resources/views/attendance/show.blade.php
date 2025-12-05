@@ -7,11 +7,8 @@
 @php
 use Carbon\Carbon;
 
-$break1In = $attendance->breaks[0]->break_start ?? null;
-$break1Out = $attendance->breaks[0]->break_end ?? null;
-
-$break2In = $attendance->breaks[1]->break_start ?? null;
-$break2Out = $attendance->breaks[1]->break_end ?? null;
+$referBreaks = ($hasPending || $isApproved)
+    ? ($pendingRequest->newBreaks ?? $approvedRequest->newBreaks ?? collect()) : $attendance->breaks;
 @endphp
 
 @section('content')
@@ -46,67 +43,98 @@ $break2Out = $attendance->breaks[1]->break_end ?? null;
         <tr>
             <th>出勤・退勤</th>
             <td>
-            @if ($hasPending)
-                <span class="clock_in--span">{{ old('clock_in', optional($attendance)->clock_in ?  Carbon::parse($attendance->clock_in)->format('H:i') : '') }}</span> ~ 
-                <span class="clock_out--span">{{ old('clock_out', optional($attendance)->clock_out ?  Carbon::parse($attendance->clock_out)->format('H:i') : '') }}</span>
+            @if ($hasPending || $isApproved)
+
+                <span class="clock_in--span">{{ $referClockIn ?  Carbon::parse($referClockIn)->format('H:i') : '' }}</span> ~ 
+                <span class="clock_out--span">{{ $referClockOut ? Carbon::parse($referClockOut)->format('H:i') : '' }}</span>
             @else
-            <input class="clock_in" type="time" name="clock_in" value="{{ old('clock_in', optional($attendance)->clock_in ? Carbon::parse($attendance->clock_in)->format('H:i') : '') }}">
+            <input class="clock_in" type="time" name="clock_in" value="{{ old('clock_in', $referClockIn ? Carbon::parse($referClockIn)->format('H:i') : '') }}">
+             ~ 
+            <input class="clock_out" type="time" name="clock_out" value="{{ old('clock_out', $referClockOut ? Carbon::parse($referClockOut)->format('H:i') : '') }}">
             @error('clock_in')
                 <div class="input-error">{{ $message }}</div>
-            @enderror ~ 
-            <input class="clock_out" type="time" name="clock_out" value="{{ old('clock_out', optional($attendance)->clock_out ? Carbon::parse($attendance->clock_out)->format('H:i') : '') }}">
+            @enderror
             @error('clock_out')
                 <div class="input-error">{{ $message }}</div>
             @enderror
             @endif
             </td>
         </tr>
+       
         <tr>
             <th>休憩</th>
             <td>
-                @if ($hasPending)
-                    @if ($break1In || $break1Out)
-                        <span class="break_start--span">{{ $break1In ? Carbon::parse($break1In)->format('H:i') : '' }}</span> ~
-                        <span class="break_end--span">{{ $break1Out ? Carbon::parse($break1Out)->format('H:i') : '' }}</span>
-                    @endif
+            @if($hasPending || $isApproved)    
+                @if ($referBreaks->count() > 0)
+                <span class="break_start--span">{{ Carbon::parse($referBreaks[0]->new_break_in)->format('H:i') }}</span>
+                〜
+                <span class="break_end--span">{{ Carbon::parse($referBreaks[0]->new_break_out)->format('H:i') }}</span>
                 @else
-                        <input class="break_start" type="time" name="break_start" value="{{ $break1In ? Carbon::parse($break1In)->format('H:i') : '' }}">@error('break_start')
-                        <div class="input-error">{{ $message }}</div>
-                        @enderror ~
-                        <input class="break_end" type="time" name="break_end" value="{{ $break1Out ? Carbon::parse($break1Out)->format('H:i') : '' }}">
-                        @error('break_end')
-                        <div class="input-error">{{ $message }}</div>
-                        @enderror
+                    ―
                 @endif
+
+            @else
+                @php
+                    $break1 = $referBreaks[0] ?? null;
+                @endphp
+
+                <input class="break_start" type="time" name="new_breaks[0][in]" value="{{ $break1 ? Carbon::parse($break1->break_start)->format('H:i') : '' }}">
+                〜
+                <input class="break_end" type="time" name="new_breaks[0][out]" value="{{ $break1 ? Carbon::parse($break1->break_end)->format('H:i') : '' }}">
+            @endif
+            @error('new_breaks.0.in')
+                <div class="input-error">{{ $message }}</div>
+            @enderror
+            @error('new_breaks.0.out')
+                <div class="input-error">{{ $message }}</div>
+            @enderror
             </td>
         </tr>
-        @if (!$hasPending || ($break2In || $break2Out))
+        @if (!$hasPending && !$isApproved)
         <tr>
             <th>休憩2</th>
             <td>
-                @if ($hasPending)
-                        <span class="break2_start--span">{{ $break2In ? Carbon::parse($break2In)->format('H:i') : '' }}</span> ~
-                        <span class="break2_end--span">{{ $break2Out ? Carbon::parse($break2Out)->format('H:i') : '' }}</span>
-                @else
-                        <input class="break2_start" type="time" name="break2_start" value="{{ $break2In ? Carbon::parse($break2In)->format('H:i') : '' }}">
-                        @error('break2_start')
-                        <div class="input-error">{{ $message }}</div>
-                        @enderror ~
-                        <input class="break2_end" type="time" name="break2_end" value="{{ $break2Out ? Carbon::parse($break2Out)->format('H:i') : '' }}">
-                        @error('break2_end')
-                        <div class="input-error">{{ $message }}</div>
-                        @enderror
-        @endif
+            @php
+                $break2 = $referBreaks[1] ?? null;
+            @endphp
+
+                <input class="break_start" type="time" name="new_breaks[1][in]"
+                value="{{ $break2 ? Carbon::parse($break2->break_start)->format('H:i') : '' }}">
+                〜
+                <input class="break_end" type="time" name="new_breaks[1][out]"
+                value="{{ $break2 ? Carbon::parse($break2->break_end)->format('H:i') : '' }}">
+            @error('new_breaks.1.in') 
+                <div class="input-error">{{ $message }}</div> @enderror
+            @error('new_breaks.1.out') 
+                <div class="input-error">{{ $message }}</div> @enderror
             </td>
         </tr>
+        @endif
+        @if ($hasPending || $isApproved)
+        <tr>
+            <th>休憩２</th>
+            <td>
+                @if($referBreaks->count() > 1)
+                    @foreach ($referBreaks as $i => $b)
+                        @if ($i > 0)
+                            <span class="break2_start--span">{{ Carbon::parse($b->new_break_in)->format('H:i') }}</span>
+                            〜
+                            <span class="break2_end--span">{{ Carbon::parse($b->new_break_out)->format('H:i') }}</span>
+                        @endif
+                    @endforeach
+                @else
+                    -
                 @endif
+            </td>
+        </tr>
+        @endif
         <tr>
             <th>備考</th>
             <td>
-            @if ($hasPending)
-            <p class="remarks">{{ old('remarks', $attendance->remarks ?? '') }}</p>
+            @if ($hasPending || $isApproved)
+                <p class="remarks">{{ old('remarks', $referRemarks) }}</p>
             @else
-                <textarea class="remarks" name="remarks" rows="3" cols="40"> {{ old('remarks', $attendance->remarks ?? '') }}</textarea>
+                <textarea class="remarks" name="remarks" rows="3" cols="40"> {{ old('remarks', $referRemarks) }}</textarea>
                 @error('remarks')
                 <div class="input-error">{{ $message }}</div>
                 @enderror

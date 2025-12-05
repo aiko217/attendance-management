@@ -27,4 +27,22 @@ class AttendanceRequestController extends Controller
         }
         return view('attendance_requests.list', compact('requests', 'status'));
     }
+    /*public function detail($id)
+    {
+    $requestData = AttendanceRequest::with('attendance', 'user')
+        ->findOrFail($id);
+
+    $attendance = $requestData->attendance;
+
+    $date = \Carbon\Carbon::parse($attendance->date);
+    $year = $date->year;
+
+    return view('admin.request.approve', [
+        'requestData' => $requestData,
+        'attendance'  => $attendance,
+        'date'        => $date,
+        'year'        => $year,
+        'hasPending'  => false, 
+    ]);
+    }*/
 }

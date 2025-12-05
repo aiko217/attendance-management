@@ -36,7 +36,7 @@
                 <td>{{ $request->remarks ?? '' }}</td>
                 <td>{{ \Carbon\Carbon::parse($request->request_date)->format('Y/m/d') }}</td>
                 <td>
-                    <a href="{{ route('admin.stamp_correction_request.approve', $request->attendance_id) }}" class="detail_btn">詳細</a>
+                <a href="{{ route('approveForm', $request->id) }}" class="detail_btn">詳細</a>
                 </td>
             </tr>
             @empty

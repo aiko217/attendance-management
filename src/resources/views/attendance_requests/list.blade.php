@@ -36,8 +36,17 @@
                 <td>{{ $request->remarks ?? '' }}</td>
                 <td>{{ \Carbon\Carbon::parse($request->request_date)->format('Y/m/d') }}</td>
                 <td>
-                    <a href="{{ route('attendance.show', $request->attendance_id) }}" class="detail_btn">詳細</a>
-                </td>
+            @if ($request->approval_status === '承認待ち')
+                <a href="{{ route('attendance.show', $request->attendance_id) }}" class="detail_btn">
+                詳細
+                </a>
+            @else
+                <a href="{{ route('attendance.show', $request->attendance_id) }}" class="detail_btn">
+                詳細
+                </a>
+            @endif
+        </td>
+
             </tr>
             @empty
                 <tr>

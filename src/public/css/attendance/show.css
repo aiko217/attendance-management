@@ -145,6 +145,18 @@ input[type="time"]::-moz-calendar-picker-indicator {
     font-size: 18px;
 }
 
+.approved-btn {
+    width: 130px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s;
+    background-color: #696969;
+    color: #fff;
+}
+
 .update {
     width: 130px;
     padding: 6px 12px;

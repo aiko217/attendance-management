@@ -18,17 +18,6 @@ $break2Out = $attendance->breaks[1]->break_end ?? null;
 <div class="attendance-detail">
     <h2>勤怠詳細</h2>
 
-    
-@if (session('success'))
-<div class="success-message">
-    {{ session('success') }}
-</div>
-@endif
-
-    <form action="{{ route('admin.update', $attendance->id) }}" method="POST">
-    @csrf
-    @method('PUT')
-
     <table class="attendance-table">
         <tr>
             <th>名前</th>
@@ -47,81 +36,41 @@ $break2Out = $attendance->breaks[1]->break_end ?? null;
         <tr>
             <th>出勤・退勤</th>
             <td>
-            @if ($hasPending)
-                <span class="clock_in--span">{{ old('clock_in', optional($attendance)->clock_in ?  Carbon::parse($attendance->clock_in)->format('H:i') : '') }}</span> ~ 
-                <span class="clock_out--span">{{ old('clock_out', optional($attendance)->clock_out ?  Carbon::parse($attendance->clock_out)->format('H:i') : '') }}</span>
-            @else
-            <input class="clock_in" type="time" name="clock_in" value="{{ old('clock_in', optional($attendance)->clock_in ? Carbon::parse($attendance->clock_in)->format('H:i') : '') }}">
-            @error('clock_in')
-                <div class="input-error">{{ $message }}</div>
-            @enderror ~ 
-            <input class="clock_out" type="time" name="clock_out" value="{{ old('clock_out', optional($attendance)->clock_out ? Carbon::parse($attendance->clock_out)->format('H:i') : '') }}">
-            @error('clock_out')
-                <div class="input-error">{{ $message }}</div>
-            @enderror
-            @endif
+                <span class="clock_in">{{ optional($attendance)->clock_in ?  Carbon::parse($attendance->clock_in)->format('H:i') : '' }}</span> ~ 
+                <span class="clock_out">{{ optional($attendance)->clock_out ?  Carbon::parse($attendance->clock_out)->format('H:i') : '' }}</span>
+            
             </td>
         </tr>
         <tr>
             <th>休憩</th>
             <td>
-                @if ($hasPending)
-                    @if ($break1In || $break1Out)
-                        <span class="break_start--span">{{ $break1In ? Carbon::parse($break1In)->format('H:i') : '' }}</span> ~
-                        <span class="break_end--span">{{ $break1Out ? Carbon::parse($break1Out)->format('H:i') : '' }}</span>
-                    @endif
-                @else
-                        <input class="break_start" type="time" name="break_start" value="{{ $break1In ? Carbon::parse($break1In)->format('H:i') : '' }}">@error('break_start')
-                        <div class="input-error">{{ $message }}</div>
-                        @enderror ~
-                        <input class="break_end" type="time" name="break_end" value="{{ $break1Out ? Carbon::parse($break1Out)->format('H:i') : '' }}">
-                        @error('break_end')
-                        <div class="input-error">{{ $message }}</div>
-                        @enderror
-                @endif
+                    <span class="break_start">{{ $break1In ? Carbon::parse($break1In)->format('H:i') : '' }}</span> ~
+                    <span class="break_end">{{ $break1Out ? Carbon::parse($break1Out)->format('H:i') : '' }}</span>
             </td>
         </tr>
-        @if (!$hasPending || ($break2In || $break2Out))
         <tr>
             <th>休憩2</th>
             <td>
-                @if ($hasPending)
-                        <span class="break2_start--span">{{ $break2In ? Carbon::parse($break2In)->format('H:i') : '' }}</span> ~
-                        <span class="break2_end--span">{{ $break2Out ? Carbon::parse($break2Out)->format('H:i') : '' }}</span>
-                @else
-                        <input class="break2_start" type="time" name="break2_start" value="{{ $break2In ? Carbon::parse($break2In)->format('H:i') : '' }}">
-                        @error('break2_start')
-                        <div class="input-error">{{ $message }}</div>
-                        @enderror ~
-                        <input class="break2_end" type="time" name="break2_end" value="{{ $break2Out ? Carbon::parse($break2Out)->format('H:i') : '' }}">
-                        @error('break2_end')
-                        <div class="input-error">{{ $message }}</div>
-                        @enderror
-        @endif
+                    <span class="break2_start">{{ $break2In ? Carbon::parse($break2In)->format('H:i') : '' }}</span> 
+                    <span class="break2_end">{{ $break2Out ? Carbon::parse($break2Out)->format('H:i') : '' }}</span> 
             </td>
-        </tr>
-                @endif
+        </tr>    
         <tr>
             <th>備考</th>
             <td>
-            @if ($hasPending)
-            <p class="remarks">{{ old('remarks', $attendance->remarks ?? '') }}</p>
-            @else
-                <textarea class="remarks" name="remarks" rows="3" cols="40"> {{ old('remarks', $attendance->remarks ?? '') }}</textarea>
-                @error('remarks')
-                <div class="input-error">{{ $message }}</div>
-                @enderror
-            @endif
+            <p class="remarks">{{  $attendance->remarks ?? '' }}</p>
             </td>
         </tr>
     </table>
     <div class="btn-area">
-        @if ($hasPending)
-            <span class="pending-message">*承認待ちのため修正はできません。</span>
-        @else
-            <button type="submit" class="update">承認</button>
+        @if ($requestData->approval_status === '承認待ち')
+        <form action="{{ route('admin.stamp_correction_request.approve', $requestData->id) }}" method="POST">
+            @csrf
+            <button type="submit" class="approve-btn">承認</button>    
+        </form>
+          @else
+          <button type="button" class="approved-btn" disabled>承認済み</button>
         @endif
     </div>
-    </form>
 </div>
 @endsection
