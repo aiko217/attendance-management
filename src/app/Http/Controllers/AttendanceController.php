@@ -179,7 +179,7 @@ class AttendanceController extends Controller
             'pendingRequest' => $pendingRequest,
             'approvedRequest' => $approvedRequest,
             'hasPending' => !is_null($pendingRequest),
-            'isApproved' => !is_null($approvedRequest),
+            'isApproved' => false,
             'date' => $date,
             'year' => $year,
             'referClockIn' => $referClockIn,
@@ -187,35 +187,15 @@ class AttendanceController extends Controller
             'referRemarks' => $referRemarks,
             'referBreaks' => $referBreaks,
         ]);
-        /*$hasPending = $attendance->attendanceRequests
-        ->where('approval_status', '承認待ち')
-        ->isNotEmpty();
-
-        $isApproved = $attendance->attendanceRequests
-        ->where('approval_status', '承認済み')
-        ->isNotEmpty();
-
-        $date = \Carbon\Carbon::parse($attendance->date);
-        $year = $date->year;
-        $month = $date->month;
-
-        return view('attendance.show', compact('attendance', 'year', 'month', 'date', 'hasPending', 'isApproved'));*/
+        
     }
 
     public function update(ShowRequest $request, $id)
     {
-        //$attendance = Attendance::with('breaks', 'attendanceRequests')->findOrFail($id);
 
         $attendance = Attendance::with('breaks')->findOrFail($id);
         $validated = $request->validated();
         $user = Auth::user();
-    
-        /*$firstBreak = $attendance->breaks->first();
-    
-        $newClockIn  = $validated['clock_in'] ?? $attendance->clock_in;
-        $newClockOut = $validated['clock_out'] ?? $attendance->clock_out;
-        $newBreakIn  = $firstBreak ? $firstBreak->break_start : null;
-        $newBreakOut = $firstBreak ? $firstBreak->break_end : null;*/
     
         $formatTime = fn($time) => $time ? Carbon::parse($time)->format('H:i:s') : null;
     
