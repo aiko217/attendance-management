@@ -26,68 +26,159 @@ class AttendanceController extends Controller
     public function show($id)
     {
 
-        $attendance = Attendance::with(['user', 'breaks', 'attendanceRequests'])
+        $attendance = Attendance::with(['user', 'breaks', 'attendanceRequests.newBreaks']) 
         ->findOrFail($id);
 
-        $hasPending = $attendance->attendanceRequests
+        $pendingRequest = $attendance->attendanceRequests
         ->where('approval_status', '承認待ち')
-        ->isNotEmpty();
+        ->sortByDesc('request_date')->first();
 
-        $latestRequest = $attendance->attendanceRequests
-        ->sortByDesc('id')
-        ->first();
+        $approvedRequest = $attendance->attendanceRequests
+        ->where('approval_status', '承認済み')
+        ->sortByDesc('request_date')->first();
+
+        /*$source = $pendingRequest ?? $approvedRequest;
+
+        if ($source) {
+
+            $referClockIn = $source->new_clock_in;
+            $referClockOut = $source->new_clock_out;
+            $referBreaks = collect($source->newBreaks ?? []);
+            $referRemarks = $source->remarks;*/
+        if($pendingRequest) {
+            //$referClockIn = $pendingRequest->new_clock_in;
+            //$referClockOut = $pendingRequest->new_clock_out;
+            $source = $pendingRequest;
+            $rawBreaks = $pendingRequest->newBreaks;
+            //$referRemarks = $pendingRequest->remarks;
+        } elseif ($approvedRequest && $approvedRequest->newBreaks->count() > 0) {
+            //$referClockIn = $approvedRequest->new_clock_in;
+            //$referClockOut = $approvedRequest->new_clock_out;
+            $source = $approvedRequest;
+            $rawBreaks = $approvedRequest->newBreaks;
+            //$referRemarks = $approvedRequest->remarks;
+
+        } else {
+            //$referClockIn = $attendance->clock_in;
+            //$referClockOut = $attendance->clock_out;
+            $source = $attendance;
+            $rawBreaks = $attendance->breaks;
+            //$referRemarks = $attendance->remarks;
+        }
+
+        $referClockIn = $source->new_clock_in ?? $source->clock_in;
+        $referClockOut = $source->new_clock_out ?? $source->clock_out;
+        $referRemarks = $source->remarks ?? '';
+
+        $referBreaks = $rawBreaks->map(function ($b) {
+            return (object)[
+                'start' => $b->new_break_in ?? $b->break_start,
+                'end' => $b->new_break_out ?? $b->break_end,
+            ];
+        })->values();
 
         $date = \Carbon\Carbon::parse($attendance->date);
         $year = $date->year;
-        $month = $date->month;
 
-        return view('admin.attendance.show', compact('attendance', 'year', 'month', 'date', 'hasPending', 'latestRequest'));
+        return view('admin.attendance.show', [
+            'attendance' =>$attendance,
+            'pendingRequest' => $pendingRequest,
+            'approvedRequest' => $approvedRequest,
+            'hasPending' => !is_null($pendingRequest),
+            'isApproved' => !is_null($approvedRequest),
+            'date' => $date,
+            'year' => $year,
+            'referClockIn' => $referClockIn,
+            'referClockOut' => $referClockOut,
+            'referRemarks' => $referRemarks,
+            'referBreaks' => $referBreaks,
+        ]);
     }
 
     public function update(AdminShowRequest $request, $id)
-    {
-        $attendance = Attendance::with('breaks')->findOrFail($id);
+{
+    $attendance = Attendance::with('breaks')->findOrFail($id);
+    $validated  = $request->validated();
 
-        $validated = $request->validated();
-        /*$user = Auth::user();
-    
-        $firstBreak = $attendance->breaks->first();
-    
-        $newClockIn  = $validated['clock_in'] ?? $attendance->clock_in;
-        $newClockOut = $validated['clock_out'] ?? $attendance->clock_out;
-        $newBreakIn  = $firstBreak ? $firstBreak->break_start : null;
-        $newBreakOut = $firstBreak ? $firstBreak->break_end : null;*/
-    
-        $formatTime = fn($time) => $time ? Carbon::parse($time)->format('H:i:s') : null;
+    $formatTime = fn($t) => $t ? Carbon::parse($t)->format('H:i:s') : null;
+
+    $isAdmin = Auth::guard('admin')->check();
+
+    $attendanceRequest = AttendanceRequest::create([
+        'attendance_id'  => $attendance->id,
+        'user_id'        => $attendance->user_id,
+        'approval_status'=> $isAdmin ? '承認済み' : '承認待ち',
+        'request_date'   => now()->toDateString(),
+        'new_date'       => $attendance->date,
+        'new_clock_in'   => $formatTime($validated['clock_in']),
+        'new_clock_out'  => $formatTime($validated['clock_out']),
+        'remarks'        => $validated['remarks'] ?? '',
+    ]);
+
+    if ($request->filled('new_breaks')) {
+        foreach ($request->new_breaks as $break) {
+            if (!empty($break['in']) && !empty($break['out'])) {
+                $attendanceRequest->newBreaks()->create([
+                    'new_break_in'  => Carbon::parse($break['in'])->format('H:i:s'),
+                    'new_break_out' => Carbon::parse($break['out'])->format('H:i:s'),
+                ]);
+            }
+        }
+    }
+
+    if ($isAdmin) {
     
         $attendance->update([
-            'clock_in' => $formatTime($validated['clock_in']), //?? $attendance->clock_in),
-            'clock_out' => $formatTime($validated['clock_out']), //?? $attendance->clock_out),
-            'remarks' => $validated['remarks'], //?? $attendance->remarks,
+            'clock_in' => $attendanceRequest->new_clock_in,
+            'clock_out'=> $attendanceRequest->new_clock_out,
+            'remarks'  => $attendanceRequest->remarks,
         ]);
 
-        if ($attendance->breaks->first()) {
-            $attendance->breaks->first()->update([
-                'break_start' => $formatTime($validated['break_start']), //?? $attendance->breaks->first()->break_start),
-                'break_end' => $formatTime($validated['break_end']), //?? $attendance->breaks->first()->break_end),
-            ]);
-        }
-        /*AttendanceRequest::create([
-            'attendance_id'   => $attendance->id,
-            'user_id'         => $attendance->user_id,
-            'approval_status' => '承認済み',
-            'request_date'    => now()->toDateString(),
-            'new_date'        => $attendance->date,
-            'new_clock_in'    => $formatTime($validated['clock_in'] ?? null),
-            'new_clock_out'   => $formatTime($validated['clock_out'] ?? null),
-            'new_break_in'    => $formatTime($validated['break_start'] ?? null),
-            'new_break_out'   => $formatTime($validated['break_end'] ?? null),
-            'remarks'         => $validated['remarks'] ?? '',
-        ]);*/
-    
-        return redirect()->route('admin.show', $attendance->id)
-        ->with('success', '修正しました');
+        $attendance->breaks()->delete();
+
+        foreach ($attendanceRequest->newBreaks as $nb) {
+        $attendance->breaks()->create([
+            'break_start' => $nb->new_break_in,
+            'break_end'   => $nb->new_break_out,
+        ]);
     }
+        /*$existingBreaks = $attendance->breaks->values();
+
+        foreach ($attendanceRequest->newBreaks as $index => $nb) {
+            if (isset($existingBreaks[$index])) {
+                $existingBreaks[$index]->update([
+                    'break_start' => $nb->new_break_in,
+                    'break_end' => $nb->new_break_out,
+                ]);
+            }else {
+            $attendance->breaks()->create([
+                'break_start' => $nb->new_break_in,
+                'break_end'   => $nb->new_break_out,
+            ]);
+            }
+        }*/
+
+        $attendance->load('breaks');
+
+        $totalBreakSeconds = 0;
+        foreach ($attendance->breaks as $b) {
+            $totalBreakSeconds += Carbon::parse($b->break_start)
+                ->diffInSeconds(Carbon::parse($b->break_end));
+        }
+
+        $workSeconds = Carbon::parse($attendance->clock_in)
+            ->diffInSeconds(Carbon::parse($attendance->clock_out));
+
+        $attendance->update([
+            'total_break_time' => gmdate('H:i:s', $totalBreakSeconds),
+            'work_time'        => gmdate('H:i:s', max($workSeconds - $totalBreakSeconds, 0)),
+        ]);
+    }
+
+    return redirect()
+        ->route('admin.show', $attendance->id)
+        ->with('success', $isAdmin ? '勤怠を修正しました' : '修正申請を送信しました');
+}
 
     public function staffAttendance(Request $request, $user_id)
     {

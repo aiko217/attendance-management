@@ -6,28 +6,12 @@
 
 @php
 use Carbon\Carbon;
-
-$break1In = $attendance->breaks[0]->break_start ?? null;
-$break1Out = $attendance->breaks[0]->break_end ?? null;
-
-$break2In = $attendance->breaks[1]->break_start ?? null;
-$break2Out = $attendance->breaks[1]->break_end ?? null;
-
-$req = $latestRequest;
-
-$get = function($requestValue, $original) use ($req) {
-    if ($req && !empty($req->$requestValue)) {
-        return Carbon::parse($req->$requestValue)->format('H:i');
-    }
-    return $original ? Carbon::parse($original)->format('H:i') : '';
-};
 @endphp
 
 @section('content')
 <div class="attendance-detail">
     <h2>勤怠詳細</h2>
 
-    
 @if (session('success'))
 <div class="success-message">
     {{ session('success') }}
@@ -57,12 +41,13 @@ $get = function($requestValue, $original) use ($req) {
             <th>出勤・退勤</th>
             <td>
             @if ($hasPending)
-                <span class="clock_in--span">{{ $get('new_clock_in', $attendance->clock_in) }}</span> ~ 
-                <span class="clock_out--span">{{ $get('new_clock_out', $attendance->clock_out) }}</span>
+
+                <span class="clock_in--span">{{ $referClockIn ?  Carbon::parse($referClockIn)->format('H:i') : '' }}</span> ~ 
+                <span class="clock_out--span">{{ $referClockOut ? Carbon::parse($referClockOut)->format('H:i') : '' }}</span>
             @else
-            <input class="clock_in" type="time" name="clock_in" value="{{ old('clock_in', $get('new_clock_in', $attendance->clock_in)) }}">
+            <input class="clock_in" type="time" name="clock_in" value="{{ old('clock_in', $referClockIn ? Carbon::parse($referClockIn)->format('H:i') : '') }}">
              ~ 
-            <input class="clock_out" type="time" name="clock_out" value="{{ old('clock_out', $get('new_clock_out', $attendance->clock_out)) }}">
+            <input class="clock_out" type="time" name="clock_out" value="{{ old('clock_out', $referClockOut ? Carbon::parse($referClockOut)->format('H:i') : '') }}">
             @error('clock_in')
                 <div class="input-error">{{ $message }}</div>
             @enderror
@@ -72,55 +57,84 @@ $get = function($requestValue, $original) use ($req) {
             @endif
             </td>
         </tr>
+       
         <tr>
             <th>休憩</th>
             <td>
-                @if ($hasPending)
-                    @if ($break1In || $break1Out)
-                    <span class="break_start--span">{{ $get('new_break_in', $break1In) }}</span> ~
-                    <span class="break_end--span">{{ $get('new_break_out', $break1Out) }}</span>
-                    @endif
+            @php $break1 = $referBreaks[0] ?? null; @endphp
+
+            @if($hasPending)
+                @if ($break1)    
+                
+                <span class="break_start--span">{{ Carbon::parse($break1->start)->format('H:i') }}</span>
+                〜
+                <span class="break_end--span">{{ Carbon::parse($break1->end)->format('H:i') }}</span>
                 @else
-                    <input class="break_start" type="time" name="break_start" value="{{ old('break_start', $get('new_break_in', $break1In)) }}">
-                    ~
-                    <input class="break_end" type="time" name="break_end" value="{{ old('break_end', $get('new_break_out', $break1Out)) }}">
-                    @error('break_start')
-                    <div class="input-error">{{ $message }}</div>
-                    @enderror
-                    @error('break_end')
-                    <div class="input-error">{{ $message }}</div>
-                    @enderror
+                    
                 @endif
+            @else
+                <input class="break_start" type="time" name="new_breaks[0][in]"
+                value="{{ $break1 ? Carbon::parse($break1->start)->format('H:i') : '' }}">
+
+                〜
+                <input class="break_end" type="time" name="new_breaks[0][out]"
+                value="{{ $break1 ? Carbon::parse($break1->end)->format('H:i') : '' }}">
+            @error('new_breaks.0.in')
+                <div class="input-error">{{ $message }}</div>
+            @enderror
+            @error('new_breaks.0.out')
+                <div class="input-error">{{ $message }}</div>
+            @enderror
+            @endif
             </td>
         </tr>
+        @if (!$hasPending)
         <tr>
             <th>休憩2</th>
             <td>
-                @if ($hasPending)
-                    @if ($break2In || $break2Out)
-                    <span class="break2_start--span">{{ $get('new_break2_in', $break2In) }}</span> ~
-                    <span class="break2_end--span">{{ $get('new_break2_out', $break2Out) }}</span>
-                    @endif
+            @php
+                $break2 = $referBreaks[1] ?? null;
+            @endphp
+
+                <input class="break_start" type="time" name="new_breaks[1][in]"
+                value="{{ $break2 ? Carbon::parse($break2->start)->format('H:i') : '' }}">
+                〜
+                <input class="break_end" type="time" name="new_breaks[1][out]"
+                value="{{ $break2 ? Carbon::parse($break2->end)->format('H:i') : '' }}">
+            @error('new_breaks.1.in') 
+                <div class="input-error">{{ $message }}</div> 
+            @enderror
+            @error('new_breaks.1.out') 
+                <div class="input-error">{{ $message }}</div> 
+            @enderror
+            </td>
+        </tr>
+        @endif
+        @if ($hasPending)
+        <tr>
+            <th>休憩２</th>
+            <td>
+                @if($referBreaks->count() > 1)
+                    @foreach ($referBreaks as $i => $break)
+                        @if ($i > 0)
+                            <span class="break2_start--span">{{ Carbon::parse($break->start)->format('H:i') }}</span>
+                            〜
+                            <span class="break2_end--span">{{ Carbon::parse($break->end)->format('H:i') }}</span>
+                        @endif
+                    @endforeach
                 @else
-                    <input class="break2_start" type="time" name="break2_start" value="{{ old('break2_start', $get('new_break2_in', $break2In)) }}">
-                    ~
-                        <input class="break2_end" type="time" name="break2_end" value="{{ old('break2_end', $get('new_break2_out', $break2Out)) }}">
-                        @error('break2_start')
-                        <div class="input-error">{{ $message }}</div>
-                        @enderror
-                        @error('break2_end')
-                        <div class="input-error">{{ $message }}</div>
-                        @enderror
+                    
                 @endif
             </td>
         </tr>
+        @endif
         <tr>
             <th>備考</th>
             <td>
             @if ($hasPending)
-            <p class="remarks">{{ $req->remarks ?? $attendance->remarks }}</p>
+                <p class="remarks">{{ old('remarks', $referRemarks) }}</p>
             @else
-                <textarea class="remarks" name="remarks" rows="3" cols="40"> {{ old('remarks', $attendance->remarks) }}</textarea>
+                <textarea class="remarks" name="remarks" rows="3" cols="40"> {{ old('remarks', $referRemarks) }}</textarea>
                 @error('remarks')
                 <div class="input-error">{{ $message }}</div>
                 @enderror
