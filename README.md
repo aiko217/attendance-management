@@ -52,3 +52,8 @@ php artisan db:seed
 name: 管理者ユーザ  
 email: admin@example.com  
 password: password123
+-------------------------
+name: 一般ユーザ  
+email: user@gmail.com 
+password: user1234  
+-------------------------
