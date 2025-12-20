@@ -18,26 +18,12 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $credentials = $request->validated(); 
-        $request->authenticate(); 
-        
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
+    
+        $request->authenticate();
+        $request->session()->regenerate();
 
-            //if (!$user->hasVerifiedEmail()) {
-                //Auth::logout();
-                //return redirect()->route('verification.//notice')->withErrors([
-                    //'email' => 'メール認証を完了してください。',
-               // ]);
-            //}
         return redirect()->route('attendance.index');
         }
-
-        return back()->withErrors([
-            'email' => 'メールアドレスまたはパスワードが正しくありません。',
-        ]);
-
-    }
 
     public function store(RegisterRequest $request)
     {

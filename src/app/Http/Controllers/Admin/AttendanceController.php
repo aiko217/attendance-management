@@ -13,8 +13,11 @@ use App\Http\Requests\Admin\AdminShowRequest;
 
 class AttendanceController extends Controller
 {
-    public function index() {
-        $date = request('date') ? Carbon::parse(request('date')) : Carbon::today();
+    public function index(Request $request) {
+
+        $date = $request->filled('date')
+            ? Carbon::parse($request->date)
+            : Carbon::today();
 
         $attendances = Attendance::with(['user', 'breaks'])
         ->whereDate('date', $date->toDateString())
@@ -37,33 +40,16 @@ class AttendanceController extends Controller
         ->where('approval_status', '承認済み')
         ->sortByDesc('request_date')->first();
 
-        /*$source = $pendingRequest ?? $approvedRequest;
-
-        if ($source) {
-
-            $referClockIn = $source->new_clock_in;
-            $referClockOut = $source->new_clock_out;
-            $referBreaks = collect($source->newBreaks ?? []);
-            $referRemarks = $source->remarks;*/
         if($pendingRequest) {
-            //$referClockIn = $pendingRequest->new_clock_in;
-            //$referClockOut = $pendingRequest->new_clock_out;
             $source = $pendingRequest;
             $rawBreaks = $pendingRequest->newBreaks;
-            //$referRemarks = $pendingRequest->remarks;
         } elseif ($approvedRequest && $approvedRequest->newBreaks->count() > 0) {
-            //$referClockIn = $approvedRequest->new_clock_in;
-            //$referClockOut = $approvedRequest->new_clock_out;
             $source = $approvedRequest;
             $rawBreaks = $approvedRequest->newBreaks;
-            //$referRemarks = $approvedRequest->remarks;
 
         } else {
-            //$referClockIn = $attendance->clock_in;
-            //$referClockOut = $attendance->clock_out;
             $source = $attendance;
             $rawBreaks = $attendance->breaks;
-            //$referRemarks = $attendance->remarks;
         }
 
         $referClockIn = $source->new_clock_in ?? $source->clock_in;
@@ -142,21 +128,6 @@ class AttendanceController extends Controller
             'break_end'   => $nb->new_break_out,
         ]);
     }
-        /*$existingBreaks = $attendance->breaks->values();
-
-        foreach ($attendanceRequest->newBreaks as $index => $nb) {
-            if (isset($existingBreaks[$index])) {
-                $existingBreaks[$index]->update([
-                    'break_start' => $nb->new_break_in,
-                    'break_end' => $nb->new_break_out,
-                ]);
-            }else {
-            $attendance->breaks()->create([
-                'break_start' => $nb->new_break_in,
-                'break_end'   => $nb->new_break_out,
-            ]);
-            }
-        }*/
 
         $attendance->load('breaks');
 

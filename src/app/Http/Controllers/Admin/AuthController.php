@@ -16,7 +16,6 @@ class AuthController extends Controller
 
     public function login(AdminLoginRequest $request)
     {
-        //$request->authenticate();
 
         $credentials = $request->only('email', 'password');
 
@@ -27,7 +26,7 @@ class AuthController extends Controller
             return redirect()->route('admin.index');
         }
         return back()->withErrors([
-            'login' => 'メールアドレスまたはパスワードが正しくありません。',
+            'email' => 'ログイン情報が登録されていません',
         ])->withInput();
     }
 

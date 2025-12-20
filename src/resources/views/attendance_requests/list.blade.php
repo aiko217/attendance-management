@@ -7,13 +7,13 @@
 @section('content')
 <div class="attendance-requests">
     <h2>申請一覧</h2>
-    
+
     <div class="border">
         <ul class="border__list">
             <li><a href="{{ route('stamp_correction_request.list', ['status' => 'pending']) }}"
-           class="tab {{ $status === 'pending' ? 'active' : '' }}">承認待ち</a></li>
+                    class="tab {{ $status === 'pending' ? 'active' : '' }}">承認待ち</a></li>
             <li><a href="{{ route('stamp_correction_request.list', ['status' => 'approved']) }}"
-           class="tab {{ $status === 'approved' ? 'active' : '' }}">承認済み</a></li>
+                    class="tab {{ $status === 'approved' ? 'active' : '' }}">承認済み</a></li>
         </ul>
     </div>
     <table class="request-table">
@@ -32,32 +32,35 @@
             <tr>
                 <td>{{ $request->approval_status }}</td>
                 <td>{{ $request->user->name ?? '' }}</td>
-                <td>{{ \Carbon\Carbon::parse($request->new_date)->format('Y/m/d') }}</td>
+                <td>{{ $request->new_date ? \Carbon\Carbon::parse($request->new_date)->format('Y/m/d') : '' }}</td>
                 <td>{{ $request->remarks ?? '' }}</td>
-                <td>{{ \Carbon\Carbon::parse($request->request_date)->format('Y/m/d') }}</td>
+                <td>{{ $request->request_date ? \Carbon\Carbon::parse($request->request_date)->format('Y/m/d') : '' }}</td>
                 <td>
-            @if ($request->approval_status === '承認待ち')
-                <a href="{{ route('attendance.show', $request->attendance_id) }}" class="detail_btn">
-                詳細
-                </a>
-            @else
-                <a href="{{ route('attendance.show', $request->attendance_id) }}" class="detail_btn">
-                詳細
-                </a>
-            @endif
-        </td>
+                    @if ($request->approval_status === '承認待ち')
+                    <a href="{{ route('attendance.show', $request->attendance_id) }}" class="detail_btn">
+                        詳細
+                    </a>
+                    @else
+                    <a href="{{ route('attendance.show', $request->attendance_id) }}" class="detail_btn">
+                        詳細
+                    </a>
+                    @endif
+                </td>
 
             </tr>
             @empty
-                <tr>
-                    <td colspan="6" class="no-data">申請はありません。</td>
-                </tr>
+            <tr>
+                <td colspan="6" class="no-data">申請はありません。</td>
+            </tr>
             @endforelse
         </tbody>
     </table>
 
     <div class="pagination">
+        @if(method_exists($requests, 'links'))
         {{ $requests->links() }}
+        @endif
+
     </div>
 </div>
 @endsection

@@ -14,29 +14,29 @@ use Carbon\Carbon;
 
     <div class="month-nav">
         <div class="month-left">
-    <img src="{{ asset('images/arrow.png') }}" alt="アプリロゴ" class="arrow-logo" />
-        <a href="{{ route('attendance.list', ['year' => Carbon::create($year, $month)->subMonth()->year, 'month' => Carbon::create($year, $month)->subMonth()->month]) }}" class="month-btn prev">前月</a>
+            <img src="{{ asset('images/arrow.png') }}" alt="アプリロゴ" class="arrow-logo" />
+            <a href="{{ route('attendance.list', ['year' => Carbon::create($year, $month)->subMonth()->year, 'month' => Carbon::create($year, $month)->subMonth()->month]) }}" class="month-btn prev">前月</a>
         </div>
         <div class="month-center">
-        <img src="{{ asset('images/calendar.png') }}" alt="アプリロゴ" class="calendar-logo" />
-        <p class="current-month">{{ $year }}/{{ $month }}</p>
+            <img src="{{ asset('images/calendar.png') }}" alt="アプリロゴ" class="calendar-logo" />
+            <p class="current-month">{{ $year }}/{{ sprintf('%02d', $month) }}</p>
         </div>
         <div class="month-right">
-        <a href="{{ route('attendance.list', ['year' => Carbon::create($year, $month)->addMonth()->year, 'month' => Carbon::create($year, $month)->addMonth()->month]) }}" class="month-btn next">翌月
-        <img src="{{ asset('images/arrow.png') }}" alt="アプリロゴ" class="arrow-logo flip" />
-        </a>
+            <a href="{{ route('attendance.list', ['year' => Carbon::create($year, $month)->addMonth()->year, 'month' => Carbon::create($year, $month)->addMonth()->month]) }}" class="month-btn next">翌月
+                <img src="{{ asset('images/arrow.png') }}" alt="アプリロゴ" class="arrow-logo flip" />
+            </a>
         </div>
     </div>
     <table class="attendance-table">
         <thead>
-        <tr>
-            <th class="date">日付</th>
-            <th class="attendance">出勤</th>
-            <th class="leaving">退勤</th>
-            <th class="break">休憩</th>
-            <th class="total">合計</th>
-            <th class="detail">詳細</th>
-        </tr>
+            <tr>
+                <th class="date">日付</th>
+                <th class="attendance">出勤</th>
+                <th class="leaving">退勤</th>
+                <th class="break">休憩</th>
+                <th class="total">合計</th>
+                <th class="detail">詳細</th>
+            </tr>
         </thead>
         <tbody>
             @foreach ($dates as $date)

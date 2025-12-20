@@ -47,7 +47,8 @@ class ShowRequest extends FormRequest
             $clock_in = $this->clock_in ? Carbon::parse($this->clock_in) : null;
             $clock_out = $this->clock_out ? Carbon::parse($this->clock_out) : null;
 
-            if ($clock_in && $clock_out && $clock_in > $clock_out) {
+            //->gt()
+            if ($clock_in && $clock_out && $clock_in ->gt($clock_out)) {
                 $validator->errors()->add('clock_in', '出勤時間もしくは退勤時間が不適切な値です');
             }
 
@@ -64,8 +65,8 @@ class ShowRequest extends FormRequest
                     }
                     if (!empty($b['out'])) {
                         $end = Carbon::parse($b['out']);
-
-                        if ($clock_out && $end > $clock_out) {
+                        //->gt()
+                        if ($clock_out && $end->gt( $clock_out)) {
                             $validator->errors()->add("new_breaks.$i.out", "休憩時間もしくは退勤時間が不適切な値です");
                 }
             }

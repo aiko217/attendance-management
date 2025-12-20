@@ -41,10 +41,14 @@ class LoginRequest extends FormRequest
     
     public function authenticate()
     {
-        if (!Auth::attempt($this->only('email', 'password'))) {
+        $credentials = $this->only('email', 'password');
+
+        $credentials['admin_status'] = 0;
+
+        if (!Auth::attempt($credentials)) {//($this->only('email', 'password'))) {
             
             throw \Illuminate\Validation\ValidationException::withMessages([
-                'email' => ['ログイン情報が登録されていません'],
+                'email' => 'ログイン情報が登録されていません',
             ]);
         }
     }

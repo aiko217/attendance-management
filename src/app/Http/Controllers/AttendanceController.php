@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\BreakTime;
 use App\Models\AttendanceRequest;
-use App\Models\NewBreak;
 use Illuminate\Http\Request;
 use App\Http\Requests\ShowRequest;
 use Illuminate\Support\Facades\Auth;
@@ -168,11 +167,6 @@ class AttendanceController extends Controller
 
         $date = \Carbon\Carbon::parse($attendance->date);
         $year = $date->year;
-
-        /*$referClockIn  = $pendingRequest->new_clock_in ?? $approvedRequest->new_clock_in ?? $attendance->clock_in;
-        $referClockOut = $pendingRequest->new_clock_out ?? $approvedRequest->new_clock_out ?? $attendance->clock_out;
-        $referRemarks  = $pendingRequest->remarks ?? $approvedRequest->remarks ?? $attendance->remarks;
-        $referBreaks   = $pendingRequest->newBreaks ?? $approvedRequest->newBreaks ?? $attendance->breaks;*/
 
         return view('attendance.show', [
             'attendance' =>$attendance,

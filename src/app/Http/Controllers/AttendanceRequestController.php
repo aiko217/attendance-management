@@ -18,31 +18,15 @@ class AttendanceRequestController extends Controller
             $requests = AttendanceRequest::where('user_id', $user->id)
             ->where('approval_status', '承認済み')
             ->orderByDesc('request_date')
-            ->paginate(10);
+            ->get();
+
         } else {
             $requests = AttendanceRequest::where('user_id', $user->id)
             ->where('approval_status', '承認待ち')
             ->orderByDesc('request_date')
-            ->paginate(10);
+            ->get();
+
         }
         return view('attendance_requests.list', compact('requests', 'status'));
     }
-    /*public function detail($id)
-    {
-    $requestData = AttendanceRequest::with('attendance', 'user')
-        ->findOrFail($id);
-
-    $attendance = $requestData->attendance;
-
-    $date = \Carbon\Carbon::parse($attendance->date);
-    $year = $date->year;
-
-    return view('admin.request.approve', [
-        'requestData' => $requestData,
-        'attendance'  => $attendance,
-        'date'        => $date,
-        'year'        => $year,
-        'hasPending'  => false, 
-    ]);
-    }*/
 }

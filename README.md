@@ -54,6 +54,21 @@ email: admin@example.com
 password: password123
 -------------------------
 name: 一般ユーザ  
-email: user@gmail.com 
+email: user@gmail.com
 password: user1234  
 -------------------------
+
+## PHPUnitを利用したテストに関して
+以下のコマンド:  
+```
+//テスト用データベースの作成
+docker-compose exec mysql bash
+mysql -u root -p
+//パスワードはrootと入力
+create database demo_test;
+
+docker-compose exec php bash
+php artisan migrate:fresh --env=testing
+./vendor/bin/phpunit
+```
+※.env.testingにもStripeのAPIキーを設定してください。 
